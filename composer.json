@@ -1,0 +1,16 @@
+{
+  "name": "degdigital/Clean_SqlReports",
+  "type": "magento-module",
+  "description": "Custom Reports with MySQL query that automatically turn it into a Magento report",
+  "require": {
+    "magento-hackathon/magento-composer-installer":"*"
+  },
+  "extra":{
+    "map":[
+      ["app/code/community/Clean/SqlReports", "app/code/community/Clean/SqlReports"],
+      ["app/etc/modules/Clean_SqlReports.xml", "app/etc/modules/Clean_SqlReports.xml"],
+      ["app/design/adminhtml/base/default/layout/clean_sqlreports","app/design/adminhtml/base/default/layout/clean_sqlreports"],
+      ["app/design/adminhtml/base/default/template/clean_sqlreports","app/design/adminhtml/base/default/template/clean_sqlreports"]
+    ]
+  }
+}

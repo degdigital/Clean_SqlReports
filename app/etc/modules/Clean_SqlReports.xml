@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Clean_SqlReports>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Clean_SqlReports>
+    </modules>
+</config>
