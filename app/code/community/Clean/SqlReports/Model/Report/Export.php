@@ -4,6 +4,7 @@ class Clean_SqlReports_Model_Report_Export
     protected $_report;
 
     public function runReport() {
+        Mage::unregister('current_report');
         Mage::register('current_report', $this->_report);
         $grid = Mage::app()->getLayout()->createBlock('cleansql/adminhtml_report_view_grid');
 
