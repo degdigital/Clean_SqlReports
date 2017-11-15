@@ -15,15 +15,6 @@ class Clean_SqlReports_Block_Adminhtml_Report_View_Grid extends Mage_Adminhtml_B
         $this->addExportType('*/*/exportTsv', $this->__('TSV'));
     }
 
-    protected function _prepareLayout()
-    {
-        parent::_prepareLayout();
-        $this->unsetChild('search_button');
-        $this->unsetChild('reset_filter_button');
-
-        return $this;
-    }
-
     /**
      * @return Clean_SqlReports_Model_Report
      */
@@ -83,25 +74,51 @@ class Clean_SqlReports_Block_Adminhtml_Report_View_Grid extends Mage_Adminhtml_B
 
         $config     = $this->_getReport()->getGridConfig();
         $filterable = $config->getFilterable();
+        $render     = $config->getRenderer();
+        $callback   = $config->getCallback();
         $items      = $collection->getItems();
         if (count($items)) {
             $item = reset($items);
             foreach ($item->getData() as $key => $val) {
                 $isFilterable = false;
+                $canRender = false;
+                $canCallback = false;
+                $options = false;
+                if (isset($render[$key])) {
+                    $canRender = $render[$key];
+                }
+                if (isset($callback[$key])) {
+                    $canCallback = $callback[$key];
+                }
                 if (isset($filterable[$key])) {
-                    $isFilterable = $filterable[$key];
-                } elseif (in_array($key, $filterable)) {
+                    if (is_array($filterable[$key]) && array_key_exists('filter', $filterable[$key]) && array_key_exists('options', $filterable[$key])){
+                        $isFilterable = $filterable[$key]['filter'];
+                        $options = $filterable[$key]['options'];
+                    } else {
+                        $isFilterable = $filterable[$key];
+                    }
+                }  elseif (in_array($key, $filterable)) {
                     $isFilterable = 'adminhtml/widget_grid_column_filter_text';
                 }
+
+                $columnParams = array(
+                    'header'   => Mage::helper('core')->__($key),
+                    'index'    => $key,
+                    'filter'   => $isFilterable,
+                    'renderer' => $canRender,
+                    'sortable' => true,
+                    'options'  => $options
+                );
+
+                if ($canCallback){
+                    $columnParams['filter_condition_callback'] = array($this, $canCallback);
+                }
+
                 $this->addColumn(
                     $key,
-                    array(
-                        'header'   => Mage::helper('core')->__($key),
-                        'index'    => $key,
-                        'filter'   => $isFilterable,
-                        'sortable' => true,
-                    )
+                    $columnParams
                 );
+
             }
         }
 
@@ -150,6 +167,27 @@ class Clean_SqlReports_Block_Adminhtml_Report_View_Grid extends Mage_Adminhtml_B
             }
         }
         $adapter->streamWriteCsv($row, "\t");
+    }
+
+    protected function _filterCategoriesCallback($collection, $column){
+        if (!$value = $column->getFilter()->getValue()) {
+            return $this;
+        }
+        $getChildrenCategories = true;
+        $categories = $value;
+
+        if ($getChildrenCategories && !empty($value) ){
+            $category = Mage::getModel('catalog/category')->load($value);
+            $childrenCategories = $category->getChildren();
+            if (!empty($childrenCategories)) {
+                $categories .= ",". $childrenCategories;
+            }
+        }
+
+        $this->getCollection()->getSelect()->where('t.category_id in ('. $categories.')');
+
+
+        return $this;
     }
 
 }

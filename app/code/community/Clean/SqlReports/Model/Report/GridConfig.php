@@ -17,4 +17,28 @@ class Clean_SqlReports_Model_Report_GridConfig extends Varien_Object
         }
         return array();
     }
+
+    /**
+     * get list of columns to render
+     */
+    public function getRenderer()
+    {
+        $render = $this->getData('render');
+        if (is_array($render)) {
+            return $render;
+        }
+        return array();
+    }
+
+    /**
+     * get list of columns for callback functions
+     */
+    public function getCallback()
+    {
+        $callback = $this->getData('callback');
+        if (is_array($callback)) {
+            return $callback;
+        }
+        return array();
+    }
 }
