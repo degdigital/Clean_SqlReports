@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<layout>
+
+    <default>
+        <reference name="root">
+            <action method="unsetChild"><child>menu</child></action>
+            <block type="cleansql/adminhtml_page_menu" name="menu" as="menu"/>
+        </reference>
+    </default>
+
+    <adminhtml_adminhtml_customreport>
+        <reference name="menu">
+            <action method="setActive">
+                <path>report/cleansql</path>
+            </action>
+        </reference>
+    </adminhtml_adminhtml_customreport>
+
+    <adminhtml_adminhtml_customreport_index>
+        <update handle="adminhtml_adminhtml_customreport"/>
+        <reference name="content">
+            <block type="cleansql/adminhtml_report" name="report">
+                <block type="cleansql/adminhtml_customreport_grid" name="report.grid" as="grid">
+                    <action method="setColumnRenderers">
+                        <renderers>
+                            <action>cleansql/adminhtml_widget_grid_column_renderer_action</action>
+                        </renderers>
+                    </action>
+                </block>
+            </block>
+        </reference>
+    </adminhtml_adminhtml_customreport_index>
+
+    <adminhtml_adminhtml_customreport_edit>
+        <update handle="adminhtml_adminhtml_customreport"/>
+        <reference name="content">
+            <block type="cleansql/adminhtml_customreport_edit" name="report_edit"/>
+        </reference>
+    </adminhtml_adminhtml_customreport_edit>
+
+    <adminhtml_adminhtml_customreport_viewtable>
+        <update handle="adminhtml_adminhtml_customreport"/>
+        <reference name="content">
+            <block type="cleansql/adminhtml_customreport_view" name="report.view">
+                <block type="cleansql/adminhtml_customreport_view_grid" name="report.view.grid" as="grid"/>
+            </block>
+        </reference>
+    </adminhtml_adminhtml_customreport_viewtable>
+
+    <adminhtml_adminhtml_customreport_viewchart>
+        <update handle="adminhtml_adminhtml_customreport"/>
+        <reference name="content">
+            <block type="cleansql/adminhtml_customreport_chart" name="report.chart"/>
+        </reference>
+    </adminhtml_adminhtml_customreport_viewchart>
+
+    <adminhtml_adminhtml_customreport_exportcsv>
+        <update handle="adminhtml_adminhtml_customreport_viewtable"/>
+    </adminhtml_adminhtml_customreport_exportcsv>
+
+</layout>
+
