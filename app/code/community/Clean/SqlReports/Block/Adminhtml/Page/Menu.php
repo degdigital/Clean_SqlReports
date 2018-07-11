@@ -24,19 +24,26 @@ class Clean_SqlReports_Block_Adminhtml_Page_Menu extends Mage_Adminhtml_Block_Pa
         if (!isset($menuArray['children'])) {
             $menuArray['children'] = array();
         }
-        $maxReports       = (int)Mage::getStoreConfig('reports/cleansql/max_reports_in_menu');
+
+        $maxReports       = (int) Mage::getStoreConfig('reports/cleansql/max_reports_in_menu');
+        $helper           = Mage::helper('cleansql');
         $reportCollection = Mage::getModel('cleansql/report')->getCollection()->setOrder('title', 'ASC');
         $reportCount      = $reportCollection->count();
         $i                = 1;
+
         foreach ($reportCollection as $report) {
+            if (! $helper->getAllowViewReport($report->getId())) {
+                continue;
+            }
+
             /** @var $report Clean_SqlReports_Model_Report */
             $titleNodeName = $this->_getXmlTitle($report);
-            $route         = Mage::helper('cleansql')->getPrimaryReportRoute($report);
+            $route         = $helper->getPrimaryReportRoute($report);
 
             $menuArray['children'][$titleNodeName] = array(
                 'label'      => $report->getTitle(),
                 'sort_order' => 0,
-                'url'        => $this->getUrl('adminhtml/adminhtml_report/' . $route, array('report_id' => $report->getId())),
+                'url'        => $this->getUrl('adminhtml/adminhtml_customreport/' . $route, array('report_id' => $report->getId())),
                 'active'     => true,
                 'level'      => 2,
                 'last'       => $reportCount === $i || $i === $maxReports,
@@ -55,6 +62,6 @@ class Clean_SqlReports_Block_Adminhtml_Page_Menu extends Mage_Adminhtml_Block_Pa
      */
     protected function _getXmlTitle(Clean_SqlReports_Model_Report $report)
     {
-        return strtolower(preg_replace('~[^a-z0-9]+~i', '', $report->getTitle()));
+        return 'report_' . $report->getId();
     }
 }
